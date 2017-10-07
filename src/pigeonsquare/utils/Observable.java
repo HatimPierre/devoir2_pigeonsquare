@@ -19,17 +19,17 @@ public class Observable {
         return changed;
     }
 
-    protected void addObs(Observer obs){
+    public void addObs(Observer obs){
         obs_l.add(obs);
     }
 
-    protected void notify(Observer obs, Message msg){
+    protected void notifyObserver(Observer obs, Message msg){
         obs.receive_msg(msg);
     }
 
-    protected void notifyAll(Message msg){
+    protected void notifyObservers(Message msg){
         for (Observer obs : obs_l){
-            notify(obs, msg);
+            notifyObserver(obs, msg);
         }
     }
 }

@@ -3,32 +3,42 @@ package pigeonsquare.model;
 import pigeonsquare.utils.Message;
 import pigeonsquare.utils.Observable;
 import pigeonsquare.utils.Observer;
-import pigeonsquare.view.View;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Model extends Observable implements Runnable, Observer{
-    private List<Food> food;
+    private List<Food> foods;
+    private List<Pigeon> pigeons;
+    private List<Rock> rocks;
     private Observer mainView;
 
     public Model(Observer obs){
         this.addObs(obs);
         mainView = obs;
-        food = new ArrayList<>();
+        foods = new ArrayList<>();
+        pigeons = new ArrayList<>();
+        rocks = new ArrayList<>();
     }
 
     public void spawnFood(int x, int y){
-        food.add(new Food(mainView));
-        System.out.println("Registered new food at [" + x + ", " + y + "]");
+        Food new_food = new Food(mainView, x, y);
+        foods.add(new_food);
+        Message msg = new Message();
+        msg.commands.add("FOOD");
+        msg.commands.add("SPAWN");
+        msg.x = x;
+        msg.y = y;
+        msg.id = new_food.getId();
+        this.notifyObservers(msg);
     }
 
-    private boolean canEat(){
+    public boolean canEat(float x, float y){
         //FIXME
         return false;
     }
 
-    private void eat(int x, int y){
+    public synchronized void eat(float x, float y){
         //FIXME
     }
     @Override

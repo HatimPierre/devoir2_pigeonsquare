@@ -25,7 +25,7 @@ public class Model extends Observable implements Runnable, Observer{
 
     private synchronized void generate_rock(){
         float tmp = Maths.sec_rand.nextFloat() / 50.0f;
-        if (Maths.sec_rand.nextFloat() > (0.99))
+        if (Maths.sec_rand.nextFloat() > (1 - tmp))
             spawnRock();
     }
 

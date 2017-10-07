@@ -64,7 +64,6 @@ public class View implements Runnable, Observer {
                         FoodG tmp = new FoodG();
                         tmp.setBounds(curr_msg.x, curr_msg.y, tmp.getWidth(), tmp.getHeight());
                         panel.add(tmp);
-
                         food_map.put(curr_msg.id, tmp);
                     } else if (curr_msg.commands.get(1).equals("ATE")) {
                         FoodG tmp = food_map.get(curr_msg.id);
@@ -92,9 +91,9 @@ public class View implements Runnable, Observer {
                 if (curr_msg.commands.size() > 1){
                     if (curr_msg.commands.get(1).equals("SPAWN")){
                         RockG tmp = new RockG();
-                        panel.add(tmp);
                         tmp.setBounds(curr_msg.x, curr_msg.y ,
                                 tmp.getWidth(), tmp.getHeight());
+                        panel.add(tmp);
                         rock_map.put(curr_msg.id, tmp);
                     } else if (curr_msg.commands.get(1).equals("KILL")){
                         RockG tmp = rock_map.get(curr_msg.id);
@@ -127,5 +126,7 @@ public class View implements Runnable, Observer {
     @Override
     public synchronized void receive_msg(Message msg) {
         msg_q.offer(msg);
+        if(msg.commands.contains("ROCK"))
+            System.out.println("Msg " + msg.commands + " for " + msg.id.toString());
     }
 }

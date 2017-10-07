@@ -1,9 +1,6 @@
 package pigeonsquare.model;
 
-import pigeonsquare.utils.Maths;
-import pigeonsquare.utils.Message;
-import pigeonsquare.utils.Observable;
-import pigeonsquare.utils.Observer;
+import pigeonsquare.utils.*;
 
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
@@ -22,6 +19,8 @@ public class Pigeon extends Observable implements Runnable, Observer {
     private UUID id;
     private boolean initialized;
     private Food target_food;
+    private long scare_duration;
+    private boolean scared;
 
     public Pigeon(Model model){
         initialized = false;
@@ -32,7 +31,32 @@ public class Pigeon extends Observable implements Runnable, Observer {
         msg_q = new LinkedBlockingQueue<>();
         curr_msg = null;
         target_food = null;
+        scared = false;
         resetState();
+    }
+
+    private void processMsg(){
+        synchronized (model){
+            if (curr_msg.commands.size() > 0 && curr_msg.commands.get(0).equals("ROCK")) {
+                if (curr_msg.commands.size() > 1 && curr_msg.commands.get(1).equals("SPAWN")) {
+                    if (Maths.distance(x, y, curr_msg.x, curr_msg.y) < PIGEON_SCARE_DISTANCE){
+                        scare_duration = PIGEON_SCARE_DURATION;
+                        scared = true;
+                        int scare_x = (int) max(min(2*x - curr_msg.x, 596), 0);
+                        int scare_y = (int) max(min(2*y - curr_msg.y, 612),0);
+                        moveTo(scare_x, scare_y);
+                    }
+                }
+            }
+        }
+    }
+
+    private void evaluateScarness(){
+        if (--scare_duration < 0){
+            resetState();
+        }
+        else if(needs_move())
+                step();
     }
 
     private void chooseTarget(){
@@ -55,7 +79,7 @@ public class Pigeon extends Observable implements Runnable, Observer {
         }
     }
 
-    private void moveTo(int x, int y){
+    private void moveTo(float x, float y){
         x_dest = x;
         y_dest = y;
     }
@@ -65,6 +89,7 @@ public class Pigeon extends Observable implements Runnable, Observer {
         y_dest = y;
         angle = 0.0f;
         target_food = null;
+        scared = false;
     }
 
     private void step(){
@@ -103,15 +128,20 @@ public class Pigeon extends Observable implements Runnable, Observer {
             advertiseSelf("SPAWN");
             initialized = true;
         }
-        chooseTarget();
-        if(needs_move())
-            step();
-        else if (target_food != null)
-            eat();
+        while((curr_msg = msg_q.poll()) != null)
+            processMsg();
+        if (!scared){
+            chooseTarget();
+            if(needs_move())
+                step();
+            else if (target_food != null)
+                eat();
+        } else
+            evaluateScarness();
     }
 
     @Override
     public void receive_msg(Message msg) {
-
+        msg_q.offer(msg);
     }
 }

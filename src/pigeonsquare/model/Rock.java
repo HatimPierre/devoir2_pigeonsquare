@@ -12,7 +12,6 @@ import static pigeonsquare.utils.GameConst.ROCK_LIFESPAN;
 public class Rock{
     private int x, y;
     int lifespan;
-    public static float RADIUS_EFFECT = 3.0f;
     private UUID id;
 
     public UUID getId() {

@@ -7,35 +7,40 @@ import pigeonsquare.utils.Observer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 public class Model extends Observable implements Runnable, Observer{
     volatile List<Food> foods;
-    private List<Pigeon> pigeons;
-    List<Rock> rocks;
+    private final List<Pigeon> pigeons;
+    volatile List<Rock> rocks;
+    private final Stack<Rock> toKill;
 
     public Model(Observer obs){
         this.addObs(obs);
         foods = new ArrayList<>();
         pigeons = new ArrayList<>();
         rocks = new ArrayList<>();
+        toKill = new Stack<>();
     }
 
     private synchronized void generate_rock(){
-
+        float tmp = Maths.sec_rand.nextFloat() / 50.0f;
+        if (Maths.sec_rand.nextFloat() > (0.99))
+            spawnRock();
     }
 
     public synchronized void spawnRock(){
-        int x = Maths.sec_rand.nextInt(651);
-        int y = Maths.sec_rand.nextInt(656);
-        Rock new_rock = new Rock(x, y);
-        rocks.add(new_rock);
-        Message msg = new Message();
-        msg.commands.add("ROCK");
-        msg.commands.add("SPAWN");
-        msg.x = x;
-        msg.y = y;
-        msg.id = new_rock.getId();
-        this.notifyObservers(msg);
+            int x = Maths.sec_rand.nextInt(651);
+            int y = Maths.sec_rand.nextInt(656);
+            Rock new_rock = new Rock(x, y);
+            rocks.add(new_rock);
+            Message msg = new Message();
+            msg.commands.add("ROCK");
+            msg.commands.add("SPAWN");
+            msg.x = x;
+            msg.y = y;
+            msg.id = new_rock.getId();
+            this.notifyObservers(msg);
     }
 
     public synchronized void spawnFood(int x, int y){
@@ -51,12 +56,14 @@ public class Model extends Observable implements Runnable, Observer{
     }
 
     private synchronized void killRock(Rock r){
-        rocks.remove(r);
-        Message msg = new Message();
-        msg.commands.add("ROCK");
-        msg.commands.add("KILL");
-        msg.id = r.getId();
-        this.notifyObservers(msg);
+            if(rocks.contains(r)){
+                Message msg = new Message();
+                msg.commands.add("ROCK");
+                msg.commands.add("KILL");
+                msg.id = r.getId();
+                rocks.remove(r);
+                this.notifyObservers(msg);
+            }
     }
 
     private synchronized void spoilFood(Food f){
@@ -72,13 +79,15 @@ public class Model extends Observable implements Runnable, Observer{
         for (Rock r: rocks) {
             r.lifespan--;
             if (r.lifespan < 0)
-                killRock(r);
+                toKill.push(r);
         }
         for (Food f : foods){
             f.lifespan--;
             if (f.lifespan < 0)
                 spoilFood(f);
         }
+        while (!toKill.empty())
+            killRock(toKill.pop());
     }
 
     synchronized void eat(Food f){
@@ -93,7 +102,7 @@ public class Model extends Observable implements Runnable, Observer{
     }
     @Override
     public void run() {
-
+        generate_rock();
         handle_objs_life();
     }
 

@@ -8,9 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Model extends Observable implements Runnable, Observer{
-    private List<Food> foods;
+    volatile List<Food> foods;
     private List<Pigeon> pigeons;
-    private List<Rock> rocks;
+    List<Rock> rocks;
     private Observer mainView;
 
     public Model(Observer obs){
@@ -21,7 +21,7 @@ public class Model extends Observable implements Runnable, Observer{
         rocks = new ArrayList<>();
     }
 
-    public void spawnFood(int x, int y){
+    public synchronized void spawnFood(int x, int y){
         Food new_food = new Food(mainView, x, y);
         foods.add(new_food);
         Message msg = new Message();
@@ -33,13 +33,15 @@ public class Model extends Observable implements Runnable, Observer{
         this.notifyObservers(msg);
     }
 
-    public boolean canEat(float x, float y){
-        //FIXME
-        return false;
-    }
-
-    public synchronized void eat(float x, float y){
-        //FIXME
+    public synchronized void eat(Food f){
+        if (foods.contains(f)){
+            Message msg = new Message();
+            msg.commands.add("FOOD");
+            msg.commands.add("ATE");
+            msg.id = f.getId();
+            foods.remove(f);
+            this.notifyObservers(msg);
+        }
     }
     @Override
     public void run() {

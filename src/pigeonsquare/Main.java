@@ -23,7 +23,7 @@ public class Main {
         Controller ctrl = new Controller();
         View view = new View(ctrl);
         Model model = new Model(view);
-        for (int i = 0; i < 1; i++){
+        for (int i = 0; i < 5; i++){
             Pigeon pig = new Pigeon(model);
             pigeons.add(pig);
             pig.addObs(view);

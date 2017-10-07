@@ -14,13 +14,14 @@ import static pigeonsquare.utils.GameConst.*;
 
 public class Pigeon extends Observable implements Runnable, Observer {
     private final BlockingQueue<Message> msg_q;
+    private final Model model;
     private Message curr_msg;
     private float x, y;
     private float x_dest, y_dest;
     private float angle;
     private UUID id;
-    private Model model;
     private boolean initialized;
+    private Food target_food;
 
     public Pigeon(Model model){
         initialized = false;
@@ -30,14 +31,37 @@ public class Pigeon extends Observable implements Runnable, Observer {
         this.model = model;
         msg_q = new LinkedBlockingQueue<>();
         curr_msg = null;
-        stopMove();
+        target_food = null;
+        resetState();
     }
 
-    private void evaluateMove(int x2, int y2){
+    private void chooseTarget(){
+        float best_dist = Float.MAX_VALUE;
+        float tmp_dist;
+        synchronized (Model.class){
+            if (!model.foods.contains(target_food))
+                resetState();
+            for (Food f: model.foods) {
+                tmp_dist = Maths.distance(x, y, f.getX(), f.getY());
+                if (best_dist > tmp_dist){
+                    best_dist = tmp_dist;
+                    x_dest = f.getX();
+                    y_dest = f.getY();
+                    target_food = f;
+                    }
+            }
+        }
+    }
+
+    private boolean evaluateMove(int x2, int y2){
         float d1 = Maths.distance(x, y, x_dest, y_dest);
         float d2 = Maths.distance(x, y, x2, y2);
-        if(!needs_move() || d1 > d2)
+        System.out.println(d1 + " / " + d2);
+        if(d1 < NEAR_DIST || d1 > d2) {
             moveTo(x2, y2);
+            return true;
+        }
+        return false;
     }
 
     private void moveTo(int x, int y){
@@ -46,14 +70,14 @@ public class Pigeon extends Observable implements Runnable, Observer {
         angle = Maths.angle(this.x, this.y, x, y);
     }
 
-    private void stopMove(){
+    private void resetState(){
         x_dest = x;
         y_dest = y;
         angle = 0.0f;
+        target_food = null;
     }
 
     private void step(){
-        // FIXME -> notifyObserver
         angle = Maths.angle(this.x, this.y, x_dest, y_dest);
         x += STEP * cos(angle);
         y += STEP * sin(angle);
@@ -78,33 +102,28 @@ public class Pigeon extends Observable implements Runnable, Observer {
         return id;
     }
 
-    private void processMsg(){
-        if (curr_msg.commands.size() > 0) {
-            if (curr_msg.commands.get(0).equals("FOOD")) {
-                if (curr_msg.commands.size() > 1 && curr_msg.commands.get(1).equals("SPAWN")) {
-                    evaluateMove(curr_msg.x, curr_msg.y);
-                }
-            }
-        }
+    private void eat(){
+        model.eat(target_food);
+        resetState();
     }
+
     @Override
     public void run() {
         if(!initialized){
             advertiseSelf("SPAWN");
             initialized = true;
         }
-        while((curr_msg = msg_q.poll()) != null)
-            processMsg();
+        chooseTarget();
         if(needs_move())
             step();
-        if(model.canEat(x, y))
-            stopMove();
-            model.eat(x, y);
+        else if (target_food != null)
+            eat();
+        else
+            resetState();
     }
 
     @Override
     public void receive_msg(Message msg) {
-        msg_q.offer(msg);
-       //FIXME react to new food spawning
+
     }
 }

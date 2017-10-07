@@ -59,12 +59,18 @@ public class View implements Runnable, Observer {
     private void processMsg(){
         if (curr_msg.commands.size() > 0) {
             if (curr_msg.commands.get(0).equals("FOOD")) {
-                if (curr_msg.commands.size() > 1 && curr_msg.commands.get(1).equals("SPAWN")) {
-                    FoodG tmp = new FoodG();
-                    tmp.setBounds(curr_msg.x, curr_msg.y, tmp.getWidth(), tmp.getHeight());
-                    panel.add(tmp);
+                if (curr_msg.commands.size() > 1){
+                    if(curr_msg.commands.get(1).equals("SPAWN")) {
+                        FoodG tmp = new FoodG();
+                        tmp.setBounds(curr_msg.x, curr_msg.y, tmp.getWidth(), tmp.getHeight());
+                        panel.add(tmp);
 
-                    food_map.put(curr_msg.id, tmp);
+                        food_map.put(curr_msg.id, tmp);
+                    } else if (curr_msg.commands.get(1).equals("ATE")) {
+                        FoodG tmp = food_map.get(curr_msg.id);
+                        food_map.remove(curr_msg.id);
+                        panel.remove(tmp);
+                    }
                 }
             } else if (curr_msg.commands.get(0).equals("PIGEON")){
                 if (curr_msg.commands.size() > 1){
@@ -76,14 +82,15 @@ public class View implements Runnable, Observer {
                         System.out.println(tmp.getY() + " " + curr_msg.y);
                         pigeon_map.put(curr_msg.id, tmp);
                     } else if (curr_msg.commands.get(1).equals("MOVE")){
-                        System.out.println("IT MOVED");
                         PigeonG tmp = pigeon_map.get(curr_msg.id);
                         tmp.setBounds(curr_msg.x, curr_msg.y, tmp.getWidth(), tmp.getHeight());
                     }
                 }
             }
         }
+        panel.revalidate();
         panel.repaint();
+        frame.revalidate();
         frame.repaint();
     }
 
@@ -102,7 +109,7 @@ public class View implements Runnable, Observer {
     }
 
     @Override
-    public void receive_msg(Message msg) {
+    public synchronized void receive_msg(Message msg) {
         msg_q.offer(msg);
     }
 }

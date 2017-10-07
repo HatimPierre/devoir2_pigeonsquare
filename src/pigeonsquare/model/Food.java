@@ -11,6 +11,7 @@ public class Food extends Observable{
     private int lifespan;
     public static float RADIUS_EFFECT = 3.0f;
     private UUID id;
+    private boolean fresh;
 
     public int getX() {
         return x;
@@ -24,14 +25,16 @@ public class Food extends Observable{
         return id;
     }
 
+    public boolean isFresh(){
+        return fresh;
+    }
     public Food(Observer view, int x, int y){
         // FIXME random position
         super();
         this.addObs(view);
         id = UUID.randomUUID();
-    }
-
-    public void kill(){
-        // FIXME send msg to view to stop draw it
+        fresh = true;
+        this.x = x;
+        this.y = y;
     }
 }

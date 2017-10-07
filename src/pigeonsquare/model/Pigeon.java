@@ -38,7 +38,7 @@ public class Pigeon extends Observable implements Runnable, Observer {
     private void chooseTarget(){
         float best_dist = Float.MAX_VALUE;
         float tmp_dist;
-        synchronized (Model.class){
+        synchronized (model){
             if (!model.foods.contains(target_food))
                 resetState();
             for (Food f: model.foods) {
@@ -67,7 +67,6 @@ public class Pigeon extends Observable implements Runnable, Observer {
     private void moveTo(int x, int y){
         x_dest = x;
         y_dest = y;
-        angle = Maths.angle(this.x, this.y, x, y);
     }
 
     private void resetState(){
@@ -118,8 +117,6 @@ public class Pigeon extends Observable implements Runnable, Observer {
             step();
         else if (target_food != null)
             eat();
-        else
-            resetState();
     }
 
     @Override

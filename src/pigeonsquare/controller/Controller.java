@@ -19,7 +19,6 @@ public class Controller {
     }
 
     public void clickAt(int x, int y){
-        // FIXME
         model.spawnFood(x, y);
     }
 }

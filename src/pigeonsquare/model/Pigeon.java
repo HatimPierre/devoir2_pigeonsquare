@@ -39,29 +39,20 @@ public class Pigeon extends Observable implements Runnable, Observer {
         float best_dist = Float.MAX_VALUE;
         float tmp_dist;
         synchronized (model){
-            if (!model.foods.contains(target_food))
+            if (!model.foods.contains(target_food) || !target_food.isFresh())
                 resetState();
             for (Food f: model.foods) {
-                tmp_dist = Maths.distance(x, y, f.getX(), f.getY());
-                if (best_dist > tmp_dist){
-                    best_dist = tmp_dist;
-                    x_dest = f.getX();
-                    y_dest = f.getY();
-                    target_food = f;
+                if (f.isFresh()){
+                    tmp_dist = Maths.distance(x, y, f.getX(), f.getY());
+                    if (best_dist > tmp_dist){
+                        best_dist = tmp_dist;
+                        x_dest = f.getX();
+                        y_dest = f.getY();
+                        target_food = f;
                     }
+                }
             }
         }
-    }
-
-    private boolean evaluateMove(int x2, int y2){
-        float d1 = Maths.distance(x, y, x_dest, y_dest);
-        float d2 = Maths.distance(x, y, x2, y2);
-        System.out.println(d1 + " / " + d2);
-        if(d1 < NEAR_DIST || d1 > d2) {
-            moveTo(x2, y2);
-            return true;
-        }
-        return false;
     }
 
     private void moveTo(int x, int y){

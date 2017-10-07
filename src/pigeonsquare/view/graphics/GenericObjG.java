@@ -3,7 +3,7 @@ package pigeonsquare.view.graphics;
 import javax.swing.*;
 
 public class GenericObjG extends JLabel {
-    private final ImageIcon img;
+    protected ImageIcon img;
 
     public GenericObjG(ImageIcon img){
         super();

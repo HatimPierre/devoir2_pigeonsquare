@@ -6,10 +6,11 @@ import pigeonsquare.view.View;
 
 import java.util.UUID;
 
-public class Food extends Observable{
+import static pigeonsquare.utils.GameConst.FOOD_LIFESPAN;
+
+public class Food{
     private int x, y;
-    private int lifespan;
-    public static float RADIUS_EFFECT = 3.0f;
+    int lifespan;
     private UUID id;
     private boolean fresh;
 
@@ -28,13 +29,16 @@ public class Food extends Observable{
     public boolean isFresh(){
         return fresh;
     }
-    public Food(Observer view, int x, int y){
-        // FIXME random position
-        super();
-        this.addObs(view);
+
+    public void spoil(){
+        fresh = false;
+    }
+
+    public Food(int x, int y){
         id = UUID.randomUUID();
         fresh = true;
         this.x = x;
         this.y = y;
+        lifespan = FOOD_LIFESPAN;
     }
 }

@@ -70,6 +70,9 @@ public class View implements Runnable, Observer {
                         FoodG tmp = food_map.get(curr_msg.id);
                         food_map.remove(curr_msg.id);
                         panel.remove(tmp);
+                    } else if (curr_msg.commands.get(1).equals("SPOIL")){
+                        FoodG tmp = food_map.get(curr_msg.id);
+                        tmp.spoil();
                     }
                 }
             } else if (curr_msg.commands.get(0).equals("PIGEON")){
@@ -79,11 +82,24 @@ public class View implements Runnable, Observer {
                         panel.add(tmp);
                         tmp.setBounds(curr_msg.x, curr_msg.y ,
                                 tmp.getWidth(), tmp.getHeight());
-                        System.out.println(tmp.getY() + " " + curr_msg.y);
                         pigeon_map.put(curr_msg.id, tmp);
                     } else if (curr_msg.commands.get(1).equals("MOVE")){
                         PigeonG tmp = pigeon_map.get(curr_msg.id);
                         tmp.setBounds(curr_msg.x, curr_msg.y, tmp.getWidth(), tmp.getHeight());
+                    }
+                }
+            } else if (curr_msg.commands.get(0).equals("ROCK")){
+                if (curr_msg.commands.size() > 1){
+                    if (curr_msg.commands.get(1).equals("SPAWN")){
+                        RockG tmp = new RockG();
+                        panel.add(tmp);
+                        tmp.setBounds(curr_msg.x, curr_msg.y ,
+                                tmp.getWidth(), tmp.getHeight());
+                        rock_map.put(curr_msg.id, tmp);
+                    } else if (curr_msg.commands.get(1).equals("KILL")){
+                        RockG tmp = rock_map.get(curr_msg.id);
+                        rock_map.remove(curr_msg.id);
+                        panel.remove(tmp);
                     }
                 }
             }

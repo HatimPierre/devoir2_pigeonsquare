@@ -4,18 +4,25 @@ import pigeonsquare.utils.Observable;
 import pigeonsquare.utils.Observer;
 import pigeonsquare.view.View;
 
-public class Rock extends Observable{
-    private int x, y;
-    private int lifespan;
-    public static float RADIUS_EFFECT = 3.0f;
+import java.util.UUID;
 
-    public Rock(Observer view){
-        // FIXME random position
-        super();
-        this.addObs(view);
+import static pigeonsquare.utils.GameConst.FOOD_LIFESPAN;
+import static pigeonsquare.utils.GameConst.ROCK_LIFESPAN;
+
+public class Rock{
+    private int x, y;
+    int lifespan;
+    public static float RADIUS_EFFECT = 3.0f;
+    private UUID id;
+
+    public UUID getId() {
+        return id;
     }
 
-    public void kill(){
-        // FIXME send msg to view to stop draw it
+    public Rock(int x, int y){
+        id = UUID.randomUUID();
+        this.x = x;
+        this.y = y;
+        lifespan = ROCK_LIFESPAN;
     }
 }

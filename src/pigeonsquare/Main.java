@@ -12,6 +12,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import static pigeonsquare.utils.GameConst.MODEL_TIME_STEP_MILLI;
+
 public class Main {
     private Main(){
     }
@@ -34,8 +36,10 @@ public class Main {
 
         view_exec.submit(view);
 
+        models_exec.scheduleAtFixedRate(model, 0, MODEL_TIME_STEP_MILLI, TimeUnit.MILLISECONDS);
+
         for (Pigeon p: pigeons) {
-            models_exec.scheduleAtFixedRate(p, 0,33, TimeUnit.MILLISECONDS);
+            models_exec.scheduleAtFixedRate(p, 0,MODEL_TIME_STEP_MILLI, TimeUnit.MILLISECONDS);
         }
     }
 }

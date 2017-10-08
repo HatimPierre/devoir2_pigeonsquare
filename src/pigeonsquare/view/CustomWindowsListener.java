@@ -6,7 +6,7 @@ import java.awt.event.WindowListener;
 public class CustomWindowsListener implements WindowListener {
     private View view;
 
-    public CustomWindowsListener(View view){
+    CustomWindowsListener(View view){
         this.view = view;
     }
 

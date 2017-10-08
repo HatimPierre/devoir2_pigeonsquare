@@ -8,4 +8,5 @@ public class GameConst {
     public final static long PIGEON_SCARE_DISTANCE = 400;
     public final static int FOOD_LIFESPAN = 160;
     public final static int ROCK_LIFESPAN = 200;
+    public final static int ROCK_GEN_DIVISOR = 70;
 }

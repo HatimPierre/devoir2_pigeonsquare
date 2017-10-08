@@ -51,7 +51,7 @@ public class Pigeon extends Observable implements Runnable, Observer {
         }
     }
 
-    private void evaluateScarness(){
+    private void evaluateScariness(){
         if (--scare_duration < 0){
             resetState();
         }
@@ -137,7 +137,7 @@ public class Pigeon extends Observable implements Runnable, Observer {
             else if (target_food != null)
                 eat();
         } else
-            evaluateScarness();
+            evaluateScariness();
     }
 
     @Override

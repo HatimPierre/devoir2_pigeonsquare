@@ -8,33 +8,33 @@ import java.util.UUID;
 
 import static pigeonsquare.utils.GameConst.FOOD_LIFESPAN;
 
-public class Food{
+class Food{
     private int x, y;
     int lifespan;
     private UUID id;
     private boolean fresh;
 
-    public int getX() {
+    int getX() {
         return x;
     }
 
-    public int getY() {
+    int getY() {
         return y;
     }
 
-    public UUID getId() {
+    UUID getId() {
         return id;
     }
 
-    public boolean isFresh(){
+    boolean isFresh(){
         return fresh;
     }
 
-    public void spoil(){
+    void spoil(){
         fresh = false;
     }
 
-    public Food(int x, int y){
+    Food(int x, int y){
         id = UUID.randomUUID();
         fresh = true;
         this.x = x;

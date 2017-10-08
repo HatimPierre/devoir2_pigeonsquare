@@ -4,6 +4,7 @@ import pigeonsquare.controller.Controller;
 import pigeonsquare.utils.Message;
 import pigeonsquare.utils.Observer;
 import pigeonsquare.view.graphics.FoodG;
+import pigeonsquare.view.graphics.GenericObjG;
 import pigeonsquare.view.graphics.PigeonG;
 import pigeonsquare.view.graphics.RockG;
 
@@ -28,7 +29,7 @@ public class View implements Runnable, Observer {
     private boolean initialized;
     private boolean end;
 
-    public void createGUI(){
+    private void createGUI(){
         frame = new JFrame("Feed the pigeons");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setResizable(false);
@@ -56,51 +57,62 @@ public class View implements Runnable, Observer {
         rock_map = new HashMap<>();
     }
 
+    private void spawnGenObj(GenericObjG obj){
+        panel.add(obj);
+        obj.setBounds(curr_msg.x, curr_msg.y, obj.getWidth(), obj.getHeight());
+    }
+
     private void processMsg(){
         if (curr_msg.commands.size() > 0) {
-            if (curr_msg.commands.get(0).equals("FOOD")) {
-                if (curr_msg.commands.size() > 1){
-                    if(curr_msg.commands.get(1).equals("SPAWN")) {
-                        FoodG tmp = new FoodG();
-                        tmp.setBounds(curr_msg.x, curr_msg.y, tmp.getWidth(), tmp.getHeight());
-                        panel.add(tmp);
-                        food_map.put(curr_msg.id, tmp);
-                    } else if (curr_msg.commands.get(1).equals("ATE")) {
-                        FoodG tmp = food_map.get(curr_msg.id);
-                        food_map.remove(curr_msg.id);
-                        panel.remove(tmp);
-                    } else if (curr_msg.commands.get(1).equals("SPOIL")){
-                        FoodG tmp = food_map.get(curr_msg.id);
-                        tmp.spoil();
+            switch (curr_msg.commands.get(0)) {
+                case "FOOD":
+                    if (curr_msg.commands.size() > 1) {
+                        switch (curr_msg.commands.get(1)) {
+                            case "SPAWN": {
+                                FoodG tmp = new FoodG();
+                                spawnGenObj(tmp);
+                                food_map.put(curr_msg.id, tmp);
+                                break;
+                            }
+                            case "ATE": {
+                                FoodG tmp = food_map.get(curr_msg.id);
+                                food_map.remove(curr_msg.id);
+                                panel.remove(tmp);
+                                break;
+                            }
+                            case "SPOIL": {
+                                FoodG tmp = food_map.get(curr_msg.id);
+                                tmp.spoil();
+                                break;
+                            }
+                        }
                     }
-                }
-            } else if (curr_msg.commands.get(0).equals("PIGEON")){
-                if (curr_msg.commands.size() > 1){
-                    if (curr_msg.commands.get(1).equals("SPAWN")){
-                        PigeonG tmp = new PigeonG();
-                        panel.add(tmp);
-                        tmp.setBounds(curr_msg.x, curr_msg.y ,
-                                tmp.getWidth(), tmp.getHeight());
-                        pigeon_map.put(curr_msg.id, tmp);
-                    } else if (curr_msg.commands.get(1).equals("MOVE")){
-                        PigeonG tmp = pigeon_map.get(curr_msg.id);
-                        tmp.setBounds(curr_msg.x, curr_msg.y, tmp.getWidth(), tmp.getHeight());
+                    break;
+                case "PIGEON":
+                    if (curr_msg.commands.size() > 1) {
+                        if (curr_msg.commands.get(1).equals("SPAWN")) {
+                            PigeonG tmp = new PigeonG();
+                            spawnGenObj(tmp);
+                            pigeon_map.put(curr_msg.id, tmp);
+                        } else if (curr_msg.commands.get(1).equals("MOVE")) {
+                            PigeonG tmp = pigeon_map.get(curr_msg.id);
+                            tmp.setBounds(curr_msg.x, curr_msg.y, tmp.getWidth(), tmp.getHeight());
+                        }
                     }
-                }
-            } else if (curr_msg.commands.get(0).equals("ROCK")){
-                if (curr_msg.commands.size() > 1){
-                    if (curr_msg.commands.get(1).equals("SPAWN")){
-                        RockG tmp = new RockG();
-                        tmp.setBounds(curr_msg.x, curr_msg.y ,
-                                tmp.getWidth(), tmp.getHeight());
-                        panel.add(tmp);
-                        rock_map.put(curr_msg.id, tmp);
-                    } else if (curr_msg.commands.get(1).equals("KILL")){
-                        RockG tmp = rock_map.get(curr_msg.id);
-                        rock_map.remove(curr_msg.id);
-                        panel.remove(tmp);
+                    break;
+                case "ROCK":
+                    if (curr_msg.commands.size() > 1) {
+                        if (curr_msg.commands.get(1).equals("SPAWN")) {
+                            RockG tmp = new RockG();
+                            spawnGenObj(tmp);
+                            rock_map.put(curr_msg.id, tmp);
+                        } else if (curr_msg.commands.get(1).equals("KILL")) {
+                            RockG tmp = rock_map.get(curr_msg.id);
+                            rock_map.remove(curr_msg.id);
+                            panel.remove(tmp);
+                        }
                     }
-                }
+                    break;
             }
         }
         panel.revalidate();

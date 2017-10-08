@@ -25,6 +25,7 @@ public class Main {
         Controller ctrl = new Controller();
         View view = new View(ctrl);
         Model model = new Model(view);
+
         for (int i = 0; i < 5; i++){
             Pigeon pig = new Pigeon(model);
             pigeons.add(pig);
@@ -32,7 +33,6 @@ public class Main {
             model.addObs(pig);
         }
         ctrl.setModel(model);
-        ctrl.setView(view);
 
         view_exec.submit(view);
 

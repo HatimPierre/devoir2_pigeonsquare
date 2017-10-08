@@ -10,7 +10,7 @@ public enum ImgHolder {
     public final ImageIcon pigeon_icon;
     public final ImageIcon rock_icon;
 
-    private ImgHolder(){
+    ImgHolder(){
         food_icon = new ImageIcon("assets/food_LD.png");
         food_spoiled_icon = new ImageIcon("assets/food_spoiled_LD.png");
         rock_icon = new ImageIcon("assets/rock_LD.png");

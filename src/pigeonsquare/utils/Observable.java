@@ -5,9 +5,9 @@ import java.util.List;
 
 public class Observable {
     private final List<Observer> obs_l;
-    boolean changed;
+    private boolean changed;
 
-    public Observable(){
+    protected Observable(){
         obs_l = new ArrayList<>();
     }
 
@@ -23,7 +23,7 @@ public class Observable {
         obs_l.add(obs);
     }
 
-    protected void notifyObserver(Observer obs, Message msg){
+    private void notifyObserver(Observer obs, Message msg){
         obs.receive_msg(msg);
     }
 

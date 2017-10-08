@@ -9,27 +9,27 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
+import static pigeonsquare.utils.GameConst.ROCK_GEN_DIVISOR;
+
 public class Model extends Observable implements Runnable, Observer{
     volatile List<Food> foods;
-    private final List<Pigeon> pigeons;
-    volatile List<Rock> rocks;
+    private volatile List<Rock> rocks;
     private final Stack<Rock> toKill;
 
     public Model(Observer obs){
         this.addObs(obs);
         foods = new ArrayList<>();
-        pigeons = new ArrayList<>();
         rocks = new ArrayList<>();
         toKill = new Stack<>();
     }
 
     private synchronized void generate_rock(){
-        float tmp = Maths.sec_rand.nextFloat() / 50.0f;
+        float tmp = Maths.sec_rand.nextFloat() / ROCK_GEN_DIVISOR;
         if (Maths.sec_rand.nextFloat() > (1 - tmp))
             spawnRock();
     }
 
-    public synchronized void spawnRock(){
+    private synchronized void spawnRock(){
             int x = Maths.sec_rand.nextInt(651);
             int y = Maths.sec_rand.nextInt(656);
             Rock new_rock = new Rock(x, y);

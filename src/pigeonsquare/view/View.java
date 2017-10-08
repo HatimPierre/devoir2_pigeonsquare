@@ -138,7 +138,5 @@ public class View implements Runnable, Observer {
     @Override
     public synchronized void receive_msg(Message msg) {
         msg_q.offer(msg);
-        if(msg.commands.contains("ROCK"))
-            System.out.println("Msg " + msg.commands + " for " + msg.id.toString());
     }
 }
